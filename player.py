@@ -27,5 +27,5 @@ class RatedEntity:
 if __name__ == "__main__":
     # Wikipedia examples.
     A = RatedEntity(1613, 32)
-    print(EA := A.expected_score(RatedEntity(1609, 32)))  # Should give approximately .51
+    print(A.expected_score(RatedEntity(1609, 32)))  # Should give approximately .51
     print(A.score_delta(2.88, 2.5))  # Should give approximately -12.
