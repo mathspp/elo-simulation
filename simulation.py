@@ -148,7 +148,10 @@ def main():
 
     st.title("ELO-based rating system for quizzes simulation")
     st.subheader("Accompanying blog article")
-    st.markdown("Read the accompanying blog article [here](https://mathspp.com/blog/elo-rating-system-simulation).")
+    st.markdown(
+        "Read the accompanying blog article [here]"
+        + "(https://mathspp.com/blog/elo-rating-system-simulation)."
+    )
 
     st.subheader("Simulation parameters")
     set_ratings_expander()
