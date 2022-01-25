@@ -12,7 +12,7 @@ from player import (
 )
 
 
-player_count_template = "Total players: {:>4}"
+PLAYER_COUNT_TEMPLATE = "Total players: {:>4}"
 
 st.title("ELO-based rating system for quizzes simulation")
 
@@ -27,7 +27,7 @@ with st.expander("Rating settings"):
 
 QUESTIONS = st.slider("Number of questions:", min_value=10, max_value=100, value=20)
 
-player_count_label = st.text(player_count_template.format("??"))
+player_count_label = st.text(PLAYER_COUNT_TEMPLATE.format("??"))
 player_archetypes = [AlwaysRight, AlwaysMid, AlwaysWrong, UsuallyRight, UsuallyWrong]
 with st.expander("Player archetypes"):
     player_counts = [
@@ -37,7 +37,7 @@ with st.expander("Player archetypes"):
         st.slider("Usually right", min_value=0, max_value=10_000, value=1000),
         st.slider("Usually wrong", min_value=0, max_value=10_000, value=1000),
     ]
-    player_count_label.write(player_count_template.format(sum(player_counts)))
+    player_count_label.write(PLAYER_COUNT_TEMPLATE.format(sum(player_counts)))
 
 questions = [Question(INITIAL_Q_RATING) for _ in range(QUESTIONS)]
 players = []
