@@ -99,6 +99,11 @@ def set_player_archetype_expander():
         col3.button("Unknowledgeables", on_click=set_unknowledgeable_players)
 
 
+def set_plot():
+    st.subheader("Player and question ELO rating evolution")
+    st.session_state["plot"] = st.line_chart()
+
+
 def run_simulation():
     """Run the simulation with the parameters defined by the Streamlit app."""
 
@@ -119,8 +124,6 @@ def run_simulation():
             total_questions += to_answer
     all_players = players[::]
 
-    plot = st.line_chart()
-
     c = 0
     while players:
         idx = random.randint(0, len(players) - 1)
@@ -129,7 +132,7 @@ def run_simulation():
             players.pop(idx)
 
         if not c:
-            plot.add_rows(
+            st.session_state["plot"].add_rows(
                 {
                     "Min question ELO": [min(q.rating for q in questions)],
                     "Max question ELO": [max(q.rating for q in questions)],
@@ -144,9 +147,14 @@ def main():
     """Run the Streamlit app."""
 
     st.title("ELO-based rating system for quizzes simulation")
+    st.subheader("Accompanying blog article")
+    st.markdown("Read the accompanying blog article [here](https://mathspp.com/blog/elo-rating-system-simulation).")
+
+    st.subheader("Simulation parameters")
     set_ratings_expander()
     set_questions_sliders()
     set_player_archetype_expander()
+    set_plot()
     run_simulation()
 
 
