@@ -82,30 +82,35 @@ class Player(RatedEntity, ABC):
 
 class AlwaysRight(Player):
     """A player that gets all questions correctly."""
+
     def generate_score(self) -> float:
         return 1
 
 
 class AlwaysMid(Player):
     """A player that always gets all questions half-right."""
+
     def generate_score(self) -> float:
         return 0.5
 
 
 class AlwaysWrong(Player):
     """A player that gets all questions incorrectly."""
+
     def generate_score(self) -> float:
         return 0
 
 
 class UsuallyRight(Player):
     """A player with a uniformly distributed score in [0.3, 1]."""
+
     def generate_score(self) -> float:
         return uniform(0.3, 1)
 
 
 class UsuallyWrong(Player):
     """A player with a uniformly distributed score in [0, 0.7]."""
+
     def generate_score(self) -> float:
         return uniform(0, 0.7)
 
