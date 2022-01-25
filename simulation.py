@@ -2,12 +2,21 @@ import random
 
 import streamlit as st
 
-from player import Question, UsuallyRight
+from player import (
+    Question,
+    AlwaysRight,
+    AlwaysMid,
+    AlwaysWrong,
+    UsuallyRight,
+    UsuallyWrong,
+)
 
 
-st.title("ELO-based rating system for quizzes")
+player_count_template = "Total players: {:>4}"
 
-with st.expander("Rating settings:"):
+st.title("ELO-based rating system for quizzes simulation")
+
+with st.expander("Rating settings"):
     st.text("Define the initial ratings for questions and players.")
     INITIAL_Q_RATING = st.slider(
         "Initial question rating:", min_value=100, max_value=2000, value=1000
@@ -17,13 +26,25 @@ with st.expander("Rating settings:"):
     )
 
 QUESTIONS = st.slider("Number of questions:", min_value=10, max_value=100, value=20)
-PLAYERS = st.slider("Number of players:", min_value=100, max_value=10_000, value=300)
+
+player_count_label = st.text(player_count_template.format("??"))
+player_archetypes = [AlwaysRight, AlwaysMid, AlwaysWrong, UsuallyRight, UsuallyWrong]
+with st.expander("Player archetypes"):
+    player_counts = [
+        st.slider("Always right:", min_value=0, max_value=10_000, value=100),
+        st.slider("Always half-right", min_value=0, max_value=10_000, value=100),
+        st.slider("Always wrong", min_value=0, max_value=10_000, value=100),
+        st.slider("Usually right", min_value=0, max_value=10_000, value=1000),
+        st.slider("Usually wrong", min_value=0, max_value=10_000, value=1000),
+    ]
+    player_count_label.write(player_count_template.format(sum(player_counts)))
 
 questions = [Question(INITIAL_Q_RATING) for _ in range(QUESTIONS)]
 players = []
-for _ in range(PLAYERS):
-    random.shuffle(questions)
-    players.append(UsuallyRight(INITIAL_PLAYER_RATING, questions[::]))
+for cls, total in zip(player_archetypes, player_counts):
+    for _ in range(total):
+        random.shuffle(questions)
+        players.append(cls(INITIAL_PLAYER_RATING, questions[::]))
 all_players = players[::]
 
 plot = st.line_chart(
@@ -41,7 +62,8 @@ while players:
     players[idx].answer_next()
     if not players[idx].question_queue:
         players.pop(idx)
-    c = (c + 1) % PLAYERS
+
+    c = (c + 1) % len(all_players)
     if not c:
         plot.add_rows(
             {
