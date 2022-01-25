@@ -31,6 +31,21 @@ def set_ratings_expander():
         )
 
 
+def set_questions_sliders():
+    st.session_state["questions"] = st.slider(
+        "Number of questions:", min_value=10, max_value=100, value=20
+    )
+    min_current, max_current = st.session_state.get("questions_n", [1, 100])
+    max_current = min(max_current, st.session_state["questions"])
+    min_current = min(min_current, st.session_state["questions"])
+    st.session_state["questions_n"] = st.slider(
+        "Players answer a random number of questions between:",
+        min_value=1,
+        max_value=100,
+        value=(min_current, max_current),
+    )
+
+
 def set_player_defaults():
     """Set player sliders to the default values."""
 
@@ -93,10 +108,15 @@ def run_simulation():
     ]
 
     players = []
+    total_questions = 0
     for cls in PLAYER_ARCHETYPES:
         for _ in range(st.session_state[cls.__name__ + "value"]):
             random.shuffle(questions)
-            players.append(cls(st.session_state["p_rating"], questions[::]))
+            min_q, max_q = st.session_state["questions_n"]
+            # Pick a random number of questions, from the min, to the maximum allowed.
+            to_answer = random.randint(min_q, min(max_q, len(questions)))
+            players.append(cls(st.session_state["p_rating"], questions[:to_answer]))
+            total_questions += to_answer
     all_players = players[::]
 
     plot = st.line_chart()
@@ -117,7 +137,7 @@ def run_simulation():
                     "Max player ELO": [max(p.rating for p in all_players)],
                 }
             )
-        c = (c + 1) % len(all_players)
+        c = (c + 1) % (total_questions // len(questions))
 
 
 def main():
@@ -125,9 +145,7 @@ def main():
 
     st.title("ELO-based rating system for quizzes simulation")
     set_ratings_expander()
-    st.session_state["questions"] = st.slider(
-        "Number of questions:", min_value=10, max_value=100, value=20
-    )
+    set_questions_sliders()
     set_player_archetype_expander()
     run_simulation()
 
