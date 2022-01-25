@@ -59,8 +59,9 @@ class Player(RatedEntity, ABC):
     This class also defines a strategy to handle the evolution of the K factor.
     """
 
-    def __init__(self, rating: float):
+    def __init__(self, rating: float, question_queue: list[Question]):
         super().__init__(rating, INITIAL_PLAYER_K)
+        self.question_queue = question_queue
 
     @abstractmethod
     def generate_score(self) -> float:
@@ -78,6 +79,10 @@ class Player(RatedEntity, ABC):
         self.update_score(expected_score, actual_score)
         question.update_score(1 - expected_score, 1 - actual_score)
         self.update_K()
+
+    def answer_next(self):
+        """Takes the next question in the player queue and answers it."""
+        self.answer_and_update(self.question_queue.pop())
 
 
 class AlwaysRight(Player):
