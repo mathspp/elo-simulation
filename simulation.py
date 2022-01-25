@@ -24,11 +24,30 @@ players = []
 for _ in range(PLAYERS):
     random.shuffle(questions)
     players.append(UsuallyRight(INITIAL_PLAYER_RATING, questions[::]))
+all_players = players[::]
 
+plot = st.line_chart(
+    {
+        "Min question ELO": [],
+        "Max question ELO": [],
+        "Min player ELO": [],
+        "Max player ELO": [],
+    }
+)
+
+c = 0
 while players:
     idx = random.randint(0, len(players) - 1)
     players[idx].answer_next()
     if not players[idx].question_queue:
         players.pop(idx)
-
-st.line_chart([q.rating for q in questions])
+    c = (c + 1) % PLAYERS
+    if not c:
+        plot.add_rows(
+            {
+                "Min question ELO": [min(q.rating for q in questions)],
+                "Max question ELO": [max(q.rating for q in questions)],
+                "Min player ELO": [min(p.rating for p in all_players)],
+                "Max player ELO": [max(p.rating for p in all_players)],
+            }
+        )
